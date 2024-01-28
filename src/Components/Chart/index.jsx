@@ -167,7 +167,7 @@ export default function Chart({ graphicDatas, titleChart, descriptionChart }) {
         var month = ("0" + (date.getMonth() + 1)).slice(-2); // Adiciona um zero à frente se necessário
         var day = ("0" + date.getDate()).slice(-2); // Adiciona um zero à frente se necessário
         return year + "/" + month + "/" + day;
-        return day;
+        return month + '/' + day;
     }
 
     return (
