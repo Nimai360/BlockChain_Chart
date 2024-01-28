@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --black-white-white: #fff;
+  --primary-500-brand: #2078F7;
+  --primary-10: #FFFBFF;
+  --neutral-800: #2D3748;
+  --neutral-900: #1A202C;
+  --neutral-700: #4A5568;
+  --neutral-600: #718096;
+  --neutral-500: #A0AEC0;
+  --neutral-300: #E2E8F0;
+  --purple: #A45CFF;
+  --pink: #F45975;
+
+
+  --preto-primario: #000;
+  --preto-secundario: #2b3030;
+  --preto-terciario: rgba(
+    16,
+    16,
+    16,
+    0.79
+  ); /*cor para colocar de contraste na pagina*/
+  --preto-variant: rgba(54, 54, 54, 0.79);
+  --background-darkTheme: #222224;
+  --cinza-claro: rgba(217, 217, 217, 0.7);
+  --cinza-variant: #a5a5a5;
+  --cinza-primario: #d9d9d9;
+  --cinza-texto: #ccc7c77c;
+  --cinza-cards: #ccc7c7;
+  --cinza-escuro: #333;
+  --branco-primario: #fff;
+  --branco-secundario: #f2faf9;
+  --laranja-header: #f68712;
+  --amarelo-primario: #f5b963;
+  --amarelo-warning-bootstrap: #ffc107;
+  --sombra: rgba(0, 0, 0, 0.1);
+  --verde-claro: #d7fff1;
+  --verde-claro-secundario: #c5fbd8;
+  --verde: #1bb580;
+  --verde-primario: #166527;
+  --verde-escuro: #1a3724;
+  --azul-escuro: #1f5eaf;
+  --azul-medio: #007bff;
+  --azul-primario: #00c0ee;
+  --vermelho: #ff3232;
+
+  --backgroud-color: var(--cinza-primario: );
+  --font-color: var(--preto-primario);
+  --font-color-variant: var(--branco-primario);
+  --backgroud-section-color: var(--branco-primario);
+  --backgroud-section-color-variant: var(--branco-secundario);
+  --title-color: var(--verde-primario);
+  --title-color-variant: var(--preto-primario);
+  --hover-color: var(--verde-primario);
+  --accessibility-background-color: var(--cinza-claro);
+  --button-color: var(--verde-escuro);
+  --button-color-variant: var(--amarelo-primario);
+  --default-border-color: var(--preto-secundario);
+  --background-login: var(--preto-terciario);
+}
+
+/* CSS Reset para Resetar Configurações do Navegador */
+* {
+    font-family: 'Inter', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-decoration: none;
+    color: inherit;
+    outline: none;
+    box-sizing: border-box;
+    border: none;
+    -ms-word-break: break-all;
+    word-break: break-all;
+    word-break: break-word;
+    font-size: 100%;
+    vertical-align: middle;
+}
+
+html {
+  font-size: 18px !important;
+}
+
+body {
+  margin: 0;
+  background-color: var(--backgroud-color) !important;
+  color: var(--font-color) !important;
+}
+
+label{
+  margin: 0 12px !important;
+}
+
+a {
+  text-decoration: none;
+  color: var(--preto-primario);
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background:var(--neutral-300);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--neutral-500);
+  border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neutral-600);
+}

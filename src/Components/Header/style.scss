@@ -1,0 +1,34 @@
+header {
+    // background-color: var(--primary-500-brand);
+    // height: 60px;
+
+    .menu-container {
+        padding: 12px 24px;
+        display: flex;
+        height: 100%;
+        width: 100%;
+        cursor: pointer;
+        justify-content: space-between;
+
+        .menu-itens {
+            // color: var(--black-white-white);
+            align-items: center;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0px 32px;
+
+            span{
+                margin-right: 10px;
+            }
+        }
+
+        .left-menu {}
+
+        .right-menu {
+            gap: 0px 16px;
+            button {
+                background-color: transparent;
+            }
+        }
+    }
+}
