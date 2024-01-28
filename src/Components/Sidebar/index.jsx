@@ -28,8 +28,8 @@ export default function Sidebar() {
 
     function updateMetrics(allMetrics) {
         const matchingMetrics = Charts_data.map(metric => {
-            const contractName = metric.data.metadata['A: Transfer ERC-20']['contract_name'];
-            return allMetrics.find(item => item.name === contractName);
+            const contractId = metric.data.metadata['A: Transfer ERC-20']['contract_id'];
+            return allMetrics.find(item => item.id === contractId);
         }).filter(Boolean);
 
         setHrefAllMetrics(matchingMetrics);
@@ -37,7 +37,7 @@ export default function Sidebar() {
 
     const handleContractChange = (contract, checked) => {
         const metric = {
-            'id': contract['contract_id'],
+            'id': contract['id'],
             'name': contract['name'],
             'chain_name': contract['chain_name'],
             'operation_description': '',
