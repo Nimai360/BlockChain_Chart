@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Contract_datasources from '../../assets/data/contract_datasources.json';
+import Charts_data from '../../assets/data/charts_data.json';
+import ERC20_metrics from '../../assets/data/ERC20_metrics.json';
 
 import Accordion_Title from "../Accordion_Title";
 import Metric_Options from "../Metric_Options";
 import Metric_Card from "../Metric_Card";
-import Contracts_DataSource from "../Contracts_DataSource";
 import Contracts_DataSource from "../Contracts_DataSource";
 
 import {
@@ -15,19 +16,32 @@ import {
 } from "@material-tailwind/react";
 
 const contract_type_Contracts = ['ERC20', '1212'];
+let hrefAllMetrics = [];
 
 export default function Sidebar() {
     const [allMetrics, setAllMetrics] = useState([]);
+    const [hrefAllMetrics, setHrefAllMetrics] = useState([]);
 
     useEffect(() => {
-
+        updateMetrics(allMetrics)
     }, [allMetrics]);
+
+    function updateMetrics(allMetrics) {
+        const matchingMetrics = Charts_data.map(metric => {
+            const contractName = metric.data.metadata['A: Transfer ERC-20']['contract_name'];
+            return allMetrics.find(item => item.name === contractName);
+        }).filter(Boolean);
+
+        setHrefAllMetrics(matchingMetrics);
+    }
 
     const handleContractChange = (contract, checked) => {
         const metric = {
             'id': contract['contract_id'],
             'name': contract['name'],
             'chain_name': contract['chain_name'],
+            'operation_description': '',
+            'metric_display_name': '',
             'checked': false,
         }
 
@@ -80,11 +94,11 @@ export default function Sidebar() {
                     </Accordion_Title>
 
                     <Accordion_Title title="Metrics">
-                        <Metric_Options allMetrics={allMetrics} onOptionChange={handleMetricChange} />
+                        <Metric_Options allMetrics={hrefAllMetrics} onOptionChange={handleMetricChange} />
                     </Accordion_Title>
 
                     <div className="flex flex-col gap-[10px]">
-                        {allMetrics.filter(metric => metric.checked).map((item) => (
+                        {hrefAllMetrics.filter(metric => metric.checked).map((item) => (
                             <Metric_Card item={item} onOptionChange={handleCardChange} />
                         ))}
                     </div>
