@@ -43,7 +43,7 @@ export default function Metric_Options({ allMetrics, onOptionChange }) {
                             {allMetrics.filter(item => item.metric_description.toLowerCase().includes(searchText.toLowerCase())).map((item) => (
                                 <ListItem
                                     key={item.title + '' + item.operations.operation_name}
-                                    className={`m-0 mb-[1px] gap-[10px] py-[10px] px-[4px] font-inter font-medium text-[12px] hover:text-white_color hover:bg-primary_500_brand leading-[18px] 
+                                    className={`m-0 mb-[1px] gap-[10px] py-[10px] px-[4px] font-inter font-medium text-[12px] hover:bg-primary_100 leading-[18px] 
                 ${item.checked ? 'bg-primary_500_brand text-white_color' : 'text-neutral_800'}`}
                                     onClick={(event) => handleChange(event, item)}
                                 >

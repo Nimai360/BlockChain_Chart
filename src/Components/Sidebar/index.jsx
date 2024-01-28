@@ -17,15 +17,18 @@ import {
 
 const contract_type_Contracts = ['ERC20'];
 
-export default function Sidebar() {
+export default function Sidebar({ onChangeDatas }) {
     const [allContracts, setAllContracts] = useState([]);
     const [allMetricsOptions, setAllMetricsOptions] = useState([]);
-    const [hrefAllContracts, setHrefAllContracts] = useState([]);
-    const [hrefAllMetricsOptions, setHrefAllMetricsOptions] = useState([]);
 
     useEffect(() => {
         updateMetrics(allContracts)
     }, [allContracts]);
+
+    useEffect(() => {
+        onChangeDatas(allContracts)
+    }, [allMetricsOptions]);
+
 
     function updateMetrics(allContracts) {
         let matchingChartDataIds = Charts_data.map(metric => {
@@ -50,7 +53,6 @@ export default function Sidebar() {
             return chartDataId;
         });
 
-        setHrefAllContracts(matchingChartDataIds);
         expandContractsToMetrics(matchingChartDataIds);
     }
 

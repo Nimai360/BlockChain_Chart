@@ -5,7 +5,7 @@ import { ResponsiveLine } from '@nivo/line'
 
 import DataChart from './data.json';
 
-export default function Chart() {
+export default function Chart({ graphicDatas }) {
     const [openMenu, setOpenMenu] = useState(false);
     const [openSubMenu, setOpenSubMenu] = useState(false);
 
@@ -32,7 +32,7 @@ export default function Chart() {
                         </span>
                     </div>
                     <hr className="border-1/2 border-solid border-neutral_300" />
-                    
+
                     <div className="h-[300px]">
                         <ResponsiveLine
                             data={DataChart}
