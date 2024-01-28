@@ -19,7 +19,7 @@ function App() {
         <Title />
         <div className="m-0 p-0 grid grid-cols-10 grid-rows-7 ">
           <div className="m-0 p-0 col-span-2 row-span-5 overflow-y-auto">
-            <Sidebar onChangeDatas={setGraphicDatas} />
+            <Sidebar onChangeDatas={handleDataChange} />
           </div>
           <div className="m-0 p-0 col-span-8 row-span-5 col-start-3 overflow-y-auto">
             <Chart graphicDatas={graphicDatas} />

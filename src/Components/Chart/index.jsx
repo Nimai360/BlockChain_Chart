@@ -1,13 +1,155 @@
-import { useState } from 'react';
+import React, { useState, useEffect, useRef } from "react";
 
 import { ButtonGroup, Button } from "@material-tailwind/react";
 import { ResponsiveLine } from '@nivo/line'
+import Charts_data from '../../assets/data/charts_data.json';
 
 import DataChart from './data.json';
 
 export default function Chart({ graphicDatas }) {
     const [openMenu, setOpenMenu] = useState(false);
     const [openSubMenu, setOpenSubMenu] = useState(false);
+    const [convertedGraphicDatas, setConvertedGraphicDatas] = useState(false);
+
+    useEffect(() => {
+
+        console.log(graphicDatas)
+        console.log(filterDatasByGraphicDatas(graphicDatas))
+        const transformedData = transformData(Charts_data);
+        // const filteredData = filterByDate(transformedData, '12M');
+        // console.log(transformedData);
+        setConvertedGraphicDatas(transformedData);
+    }, [graphicDatas]);
+
+    function filterDatasByGraphicDatas(graphicDatas) {
+        return Charts_data.filter(item => item.data.metadata["A: Transfer ERC-20"].metric_id === graphicDatas.metric_id);
+    }
+
+    // function getKeyWithMaxMinValue(obj, option) {
+    //     if (option === 'max')
+    //         return Object.keys(obj).reduce((min, max) => max)
+    //     return Object.keys(obj).reduce((min, max) => min)
+    // }
+
+    // function transformData(data) {
+    //     // Identifica a data mais recente
+    //     const latestTimestamp = data.reduce((item) => Math.max(latest, Number(Object.keys(item.data.series["A: Transfer ERC-20"])[0])), 0);
+    //     const latestDate = new Date(latestTimestamp);
+
+    //     // Cria uma nova data que é 7 dias antes da data mais recente
+    //     const sevenDaysBefore = new Date(latestDate.getTime());
+    //     sevenDaysBefore.setDate(latestDate.getDate() - 7);
+
+    //     const obj = data[0].data.series["A: Transfer ERC-20"]
+    //     // console.log(Object.keys(obj).reduce((a, b) => obj[a] > obj[b] ? a : b))
+    //     console.log(getKeyWithMaxMinValue(obj, 'max'))
+
+    //     return data.map(item => {
+    //         const itemTimestamp = Number(Object.keys(item.data.series["A: Transfer ERC-20"])[0]);
+    //         const itemDate = new Date(itemTimestamp);
+
+    //         // Filtra os dados para incluir apenas aqueles cujo timestamp é maior que o timestamp da nova data
+    //         const filteredData = Object.entries(item.data.series["A: Transfer ERC-20"])
+    //             .filter(([x, y]) => new Date(Number(x)) > sevenDaysBefore)
+    //             .map(([x, y]) => {
+    //                 const date = new Date(Number(x));
+    //                 const year = date.getFullYear();
+    //                 const month = ("0" + (date.getMonth() + 1)).slice(-2); // Adiciona um zero à frente se necessário
+    //                 const day = ("0" + date.getDate()).slice(-2); // Adiciona um zero à frente se necessário
+    //                 return { x: `${year}/${month}/${day}`, y: Number(y) };
+    //             });
+
+    //         return {
+    //             id: item.data.metadata["A: Transfer ERC-20"].contract_name,
+    //             color: `hsl(${Math.floor(Math.random() * 256)}, 70%, 50%)`,
+    //             data: filteredData
+    //         };
+    //     });
+    // }
+
+
+
+
+
+
+    // function filterByDate(data, period) {
+    //     const latestDate = new Date(data[0].data[0].x);
+    //     const { startDate, endDate } = getStartAndEndDates(period, latestDate);
+
+    //     return data.filter(item => {
+    //         const itemDate = new Date(item.data[0].x);
+    //         const formattedItemDate = formatDate(itemDate);
+
+    //         return formattedItemDate >= startDate && formattedItemDate <= endDate;
+    //     });
+    // }
+    // function getStartAndEndDates(period, latestDate) {
+    //     let startDate, endDate;
+
+    //     switch (period) {
+    //         case 'today':
+    //             startDate = latestDate;
+    //             endDate = latestDate;
+    //             break;
+    //         case 'yesterday':
+    //             startDate = new Date(latestDate);
+    //             startDate.setDate(startDate.getDate() - 1);
+    //             endDate = startDate;
+    //             break;
+    //         case '7D':
+    //             startDate = new Date(latestDate);
+    //             startDate.setDate(startDate.getDate() - 7);
+    //             endDate = latestDate;
+    //             break;
+    //         case '30D':
+    //             startDate = new Date(latestDate);
+    //             startDate.setDate(startDate.getDate() - 30);
+    //             endDate = latestDate;
+    //             break;
+    //         case '3M':
+    //             startDate = new Date(latestDate);
+    //             startDate.setMonth(startDate.getMonth() - 3);
+    //             endDate = latestDate;
+    //             break;
+    //         case '6M':
+    //             startDate = new Date(latestDate);
+    //             startDate.setMonth(startDate.getMonth() - 6);
+    //             endDate = latestDate;
+    //             break;
+    //         case '12M':
+    //             startDate = new Date(latestDate);
+    //             startDate.setFullYear(startDate.getFullYear() - 1);
+    //             endDate = latestDate;
+    //             console.log(startDate, endDate);
+    //             break;
+    //         default:
+    //             throw new Error('Invalid period');
+    //     }
+
+    //     // Converte as datas para o formato 'yyyy/mm/dd'
+    //     startDate = formatDate(startDate);
+    //     endDate = formatDate(endDate);
+
+    //     return { startDate, endDate };
+    // }
+
+    function transformData(data) {
+        return data.sort((a, b) => a - b)
+            .map(item => ({
+                id: item.data.metadata["A: Transfer ERC-20"].contract_name,
+                color: `hsl(${Math.floor(Math.random() * 256)}, 70%, 50%)`,
+                data: Object.entries(item.data.series["A: Transfer ERC-20"])
+                    .map(([x, y]) => ({ x: formatDate(new Date(Number(x))), y: Number(y) }))
+            }));
+    }
+
+    function formatDate(date) {
+        var year = date.getFullYear();
+        var month = ("0" + (date.getMonth() + 1)).slice(-2); // Adiciona um zero à frente se necessário
+        var day = ("0" + date.getDate()).slice(-2); // Adiciona um zero à frente se necessário
+        // return year + "/" + month + "/" + day;
+        return day;
+    }
 
     return (
         <>
@@ -35,7 +177,7 @@ export default function Chart({ graphicDatas }) {
 
                     <div className="h-[300px]">
                         <ResponsiveLine
-                            data={DataChart}
+                            data={convertedGraphicDatas}
                             margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
                             xScale={{ type: 'point' }}
                             yScale={{
