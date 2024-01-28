@@ -15,7 +15,7 @@ import {
     AccordionBody,
 } from "@material-tailwind/react";
 
-const contract_type_Contracts = ['ERC20', '1212'];
+const contract_type_Contracts = ['ERC20'];
 let hrefAllMetrics = [];
 
 export default function Sidebar() {
@@ -27,25 +27,28 @@ export default function Sidebar() {
     }, [allMetrics]);
 
     function updateMetrics(allMetrics) {
-        const matchingMetrics = Charts_data.map(metric => {
+        let matchingChartDataIds = Charts_data.map(metric => {
             const contract = metric.data.metadata['A: Transfer ERC-20'];
             const foundItem = allMetrics.find(item => item.id === contract['contract_id']);
-    
+
             if (foundItem) {
-                // Adiciona o 'metric_id' ao campo 'id'
                 foundItem.metric_id = contract['metric_id'];
                 return foundItem;
             }
-    
+
             return null;
         }).filter(Boolean);
-        // const matchingMetrics = Charts_data.map(metric => {
-        //     const contract = metric.data.metadata['A: Transfer ERC-20'];
-        //     return allMetrics.find(item => item.id === contract['contract_id']);
-        // }).filter(Boolean);
 
-        console.log(matchingMetrics);
-        setHrefAllMetrics(matchingMetrics);
+        matchingChartDataIds = matchingChartDataIds.map(chartDataId => {
+            const matchingMetric = ERC20_metrics[0].data.data.find(metric => metric.id === chartDataId.metric_id);
+            if (matchingMetric) {
+                chartDataId.metric_display_name = matchingMetric.metric_display_name;
+                chartDataId.operations = matchingMetric.operations;
+            }
+            return chartDataId;
+        });
+
+        setHrefAllMetrics(matchingChartDataIds);
     }
 
     const handleContractChange = (contract, checked) => {
@@ -53,9 +56,10 @@ export default function Sidebar() {
             'id': contract['id'],
             'name': contract['name'],
             'chain_name': contract['chain_name'],
-            'operation_description': '',
+            'contract_type': 'ERC20',
             'metric_id': '',
             'metric_display_name': '',
+            'operations': [],
             'checked': false,
         }
 
