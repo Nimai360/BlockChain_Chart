@@ -16,20 +16,21 @@ import {
 } from "@material-tailwind/react";
 
 const contract_type_Contracts = ['ERC20'];
-let hrefAllMetrics = [];
 
 export default function Sidebar() {
-    const [allMetrics, setAllMetrics] = useState([]);
-    const [hrefAllMetrics, setHrefAllMetrics] = useState([]);
+    const [allContracts, setAllContracts] = useState([]);
+    const [allMetricsOptions, setAllMetricsOptions] = useState([]);
+    const [hrefAllContracts, setHrefAllContracts] = useState([]);
+    const [hrefAllMetricsOptions, setHrefAllMetricsOptions] = useState([]);
 
     useEffect(() => {
-        updateMetrics(allMetrics)
-    }, [allMetrics]);
+        updateMetrics(allContracts)
+    }, [allContracts]);
 
-    function updateMetrics(allMetrics) {
+    function updateMetrics(allContracts) {
         let matchingChartDataIds = Charts_data.map(metric => {
             const contract = metric.data.metadata['A: Transfer ERC-20'];
-            const foundItem = allMetrics.find(item => item.id === contract['contract_id']);
+            const foundItem = allContracts.find(item => item.id === contract['contract_id']);
 
             if (foundItem) {
                 foundItem.metric_id = contract['metric_id'];
@@ -44,11 +45,33 @@ export default function Sidebar() {
             if (matchingMetric) {
                 chartDataId.metric_display_name = matchingMetric.metric_display_name;
                 chartDataId.operations = matchingMetric.operations;
+                chartDataId.operations_id = matchingMetric.operations.id;
             }
             return chartDataId;
         });
 
-        setHrefAllMetrics(matchingChartDataIds);
+        setHrefAllContracts(matchingChartDataIds);
+        expandContractsToMetrics(matchingChartDataIds);
+    }
+
+    function expandContractsToMetrics(matchingChartDataIds) {
+        matchingChartDataIds.map(item =>
+            item.operations.map(operation => {
+                const metric = {
+                    'id': item.id,
+                    'name': item.name,
+                    'chain_name': item.chain_name,
+                    'contract_type': item.contract_type,
+                    'metric_id': item.metric_id,
+                    'metric_display_name': item.metric_display_name,
+                    'operations_id': operation.id,
+                    'operations': operation,
+                    'checked': item.checked,
+                    'metric_description': `${operation.operation_description} for ${item.name} (${item.contract_type}) on ${item.chain_name}`,
+                }
+                setAllMetricsOptions(prevMetrics => [...prevMetrics, metric]);
+            }
+            ));
     }
 
     const handleContractChange = (contract, checked) => {
@@ -59,14 +82,15 @@ export default function Sidebar() {
             'contract_type': 'ERC20',
             'metric_id': '',
             'metric_display_name': '',
+            'operations_id': '',
             'operations': [],
             'checked': false,
         }
 
         if (checked) {
-            setAllMetrics(prevMetrics => [...prevMetrics, metric]);
+            setAllContracts(prevMetrics => [...prevMetrics, metric]);
         } else {
-            setAllMetrics(prevMetrics => {
+            setAllContracts(prevMetrics => {
                 const index = prevMetrics.findIndex(item => (item.name === metric.name) && (item.chain_name === metric.chain_name));
                 if (index !== -1) {
                     const newMetrics = [...prevMetrics];
@@ -75,24 +99,14 @@ export default function Sidebar() {
                 }
                 return prevMetrics;
             });
+
+            setAllMetricsOptions(prevMetrics => prevMetrics.filter(item => !(item.name == contract.name) && (item.chain_name == contract.chain_name)));
         }
     };
 
     const handleMetricChange = (item) => {
-        setAllMetrics(prevMetrics => {
-            const index = prevMetrics.findIndex(metric => metric.name === item.name && metric.chain_name === item.chain_name);
-            if (index !== -1) {
-                const newMetrics = [...prevMetrics];
-                newMetrics[index] = { ...newMetrics[index], checked: !newMetrics[index].checked };
-                return newMetrics;
-            }
-            return prevMetrics;
-        });
-    };
-
-    const handleCardChange = (item) => {
-        setAllMetrics(prevMetrics => {
-            const index = prevMetrics.findIndex(metric => metric.name === item.name && metric.chain_name === item.chain_name);
+        setAllMetricsOptions(prevMetrics => {
+            const index = prevMetrics.findIndex(metric => metric.operations_id === item.operations_id);
             if (index !== -1) {
                 const newMetrics = [...prevMetrics];
                 newMetrics[index] = { ...newMetrics[index], checked: !newMetrics[index].checked };
@@ -112,12 +126,12 @@ export default function Sidebar() {
                     </Accordion_Title>
 
                     <Accordion_Title title="Metrics">
-                        <Metric_Options allMetrics={hrefAllMetrics} onOptionChange={handleMetricChange} />
+                        <Metric_Options allMetrics={allMetricsOptions} onOptionChange={handleMetricChange} />
                     </Accordion_Title>
 
                     <div className="flex flex-col gap-[10px]">
-                        {hrefAllMetrics.filter(metric => metric.checked).map((item) => (
-                            <Metric_Card item={item} onOptionChange={handleCardChange} />
+                        {allMetricsOptions.filter(metric => metric.checked).map((item) => (
+                            <Metric_Card item={item} onOptionChange={handleMetricChange} />
                         ))}
                     </div>
 

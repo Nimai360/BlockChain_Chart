@@ -19,7 +19,7 @@ export default function Metric_Card({ item, onOptionChange }) {
                         {item.metric_display_name}
                     </Typography>
                     <Typography variant="h5" className="font-inter font-medium text-[12px] leading-[18px] text-neutral_600">
-                        {item.chain_name}
+                        {item.metric_description}
                     </Typography>
                 </CardBody>                
             </Card>
