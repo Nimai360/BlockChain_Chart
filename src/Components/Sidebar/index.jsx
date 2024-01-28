@@ -28,10 +28,23 @@ export default function Sidebar() {
 
     function updateMetrics(allMetrics) {
         const matchingMetrics = Charts_data.map(metric => {
-            const contractId = metric.data.metadata['A: Transfer ERC-20']['contract_id'];
-            return allMetrics.find(item => item.id === contractId);
+            const contract = metric.data.metadata['A: Transfer ERC-20'];
+            const foundItem = allMetrics.find(item => item.id === contract['contract_id']);
+    
+            if (foundItem) {
+                // Adiciona o 'metric_id' ao campo 'id'
+                foundItem.metric_id = contract['metric_id'];
+                return foundItem;
+            }
+    
+            return null;
         }).filter(Boolean);
+        // const matchingMetrics = Charts_data.map(metric => {
+        //     const contract = metric.data.metadata['A: Transfer ERC-20'];
+        //     return allMetrics.find(item => item.id === contract['contract_id']);
+        // }).filter(Boolean);
 
+        console.log(matchingMetrics);
         setHrefAllMetrics(matchingMetrics);
     }
 
@@ -41,6 +54,7 @@ export default function Sidebar() {
             'name': contract['name'],
             'chain_name': contract['chain_name'],
             'operation_description': '',
+            'metric_id': '',
             'metric_display_name': '',
             'checked': false,
         }
