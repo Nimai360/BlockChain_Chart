@@ -1,14 +1,16 @@
 import { useState } from 'react';
 
-export default function Title() {
+export default function Title({ onTitleChange, onSubtitleChange }) {
     const [text, setText] = useState('Untitled');
     const [textDesc, setTextDesc] = useState('+ Add description...');
 
     const handleTextChange = (event) => {
         setText(event.target.value);
+        onTitleChange(event.target.value)
     };
     const handleDescChange = (event) => {
         setTextDesc(event.target.value);
+        onSubtitleChange(event.target.value)
     };
 
     return (

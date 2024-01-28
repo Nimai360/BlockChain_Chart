@@ -6,23 +6,42 @@ import Charts_data from '../../assets/data/charts_data.json';
 
 import DataChart from './data.json';
 
-export default function Chart({ graphicDatas }) {
+const blank_model_chart = [{
+    "id": "",
+    "color": "hsl(0, 00%, 00%)",
+    "data": [
+        {
+            "x": "",
+            "y": ""
+        }
+    ]
+}]
+
+export default function Chart({ graphicDatas, titleChart, descriptionChart }) {
     const [openMenu, setOpenMenu] = useState(false);
     const [openSubMenu, setOpenSubMenu] = useState(false);
-    const [convertedGraphicDatas, setConvertedGraphicDatas] = useState(false);
+    const [convertedGraphicDatas, setConvertedGraphicDatas] = useState(blank_model_chart);
 
     useEffect(() => {
+        if (!graphicDatas || !graphicDatas.length) {
+            return;
+        }
 
-        console.log(graphicDatas)
-        console.log(filterDatasByGraphicDatas(graphicDatas))
-        const transformedData = transformData(Charts_data);
-        // const filteredData = filterByDate(transformedData, '12M');
-        // console.log(transformedData);
-        setConvertedGraphicDatas(transformedData);
+        const charts_data = findGraphicDatasInCharts_data(graphicDatas)
+        const transformedData = transformData(charts_data);
+        const filteredData = filterByDate(transformedData, '12M');
+        setConvertedGraphicDatas(filteredData);
     }, [graphicDatas]);
 
-    function filterDatasByGraphicDatas(graphicDatas) {
-        return Charts_data.filter(item => item.data.metadata["A: Transfer ERC-20"].metric_id === graphicDatas.metric_id);
+    function findGraphicDatasInCharts_data(graphicDatas) {
+        return Charts_data.filter(chartItem =>
+            graphicDatas.some(graphicsItem =>
+                chartItem.data.metadata["A: Transfer ERC-20"].metric_id === graphicsItem.metric_id &&
+                chartItem.data.metadata["A: Transfer ERC-20"].operation === graphicsItem.operations.operation &&
+                chartItem.data.metadata["A: Transfer ERC-20"].contract_id === graphicsItem.id &&
+                chartItem.data.metadata["A: Transfer ERC-20"].field === graphicsItem.operations.field
+            )
+        );
     }
 
     // function getKeyWithMaxMinValue(obj, option) {
@@ -72,66 +91,66 @@ export default function Chart({ graphicDatas }) {
 
 
 
-    // function filterByDate(data, period) {
-    //     const latestDate = new Date(data[0].data[0].x);
-    //     const { startDate, endDate } = getStartAndEndDates(period, latestDate);
+    function filterByDate(data, period) {
+        const latestDate = new Date(data[0].data[0].x);
+        const { startDate, endDate } = getStartAndEndDates(period, latestDate);
 
-    //     return data.filter(item => {
-    //         const itemDate = new Date(item.data[0].x);
-    //         const formattedItemDate = formatDate(itemDate);
+        return data.filter(item => {
+            const itemDate = new Date(item.data[0].x);
+            const formattedItemDate = formatDate(itemDate);
 
-    //         return formattedItemDate >= startDate && formattedItemDate <= endDate;
-    //     });
-    // }
-    // function getStartAndEndDates(period, latestDate) {
-    //     let startDate, endDate;
+            return formattedItemDate >= startDate && formattedItemDate <= endDate;
+        });
+    }
+    function getStartAndEndDates(period, latestDate) {
+        let startDate, endDate;
 
-    //     switch (period) {
-    //         case 'today':
-    //             startDate = latestDate;
-    //             endDate = latestDate;
-    //             break;
-    //         case 'yesterday':
-    //             startDate = new Date(latestDate);
-    //             startDate.setDate(startDate.getDate() - 1);
-    //             endDate = startDate;
-    //             break;
-    //         case '7D':
-    //             startDate = new Date(latestDate);
-    //             startDate.setDate(startDate.getDate() - 7);
-    //             endDate = latestDate;
-    //             break;
-    //         case '30D':
-    //             startDate = new Date(latestDate);
-    //             startDate.setDate(startDate.getDate() - 30);
-    //             endDate = latestDate;
-    //             break;
-    //         case '3M':
-    //             startDate = new Date(latestDate);
-    //             startDate.setMonth(startDate.getMonth() - 3);
-    //             endDate = latestDate;
-    //             break;
-    //         case '6M':
-    //             startDate = new Date(latestDate);
-    //             startDate.setMonth(startDate.getMonth() - 6);
-    //             endDate = latestDate;
-    //             break;
-    //         case '12M':
-    //             startDate = new Date(latestDate);
-    //             startDate.setFullYear(startDate.getFullYear() - 1);
-    //             endDate = latestDate;
-    //             console.log(startDate, endDate);
-    //             break;
-    //         default:
-    //             throw new Error('Invalid period');
-    //     }
+        switch (period) {
+            case 'today':
+                startDate = latestDate;
+                endDate = latestDate;
+                break;
+            case 'yesterday':
+                startDate = new Date(latestDate);
+                startDate.setDate(startDate.getDate() - 1);
+                endDate = startDate;
+                break;
+            case '7D':
+                startDate = new Date(latestDate);
+                startDate.setDate(startDate.getDate() - 7);
+                endDate = latestDate;
+                break;
+            case '30D':
+                startDate = new Date(latestDate);
+                startDate.setDate(startDate.getDate() - 30);
+                endDate = latestDate;
+                break;
+            case '3M':
+                startDate = new Date(latestDate);
+                startDate.setMonth(startDate.getMonth() - 3);
+                endDate = latestDate;
+                break;
+            case '6M':
+                startDate = new Date(latestDate);
+                startDate.setMonth(startDate.getMonth() - 6);
+                endDate = latestDate;
+                break;
+            case '12M':
+                startDate = new Date(latestDate);
+                startDate.setFullYear(startDate.getFullYear() - 1);
+                endDate = latestDate;
+                // console.log(startDate, endDate);
+                break;
+            default:
+                throw new Error('Invalid period');
+        }
 
-    //     // Converte as datas para o formato 'yyyy/mm/dd'
-    //     startDate = formatDate(startDate);
-    //     endDate = formatDate(endDate);
+        // Converte as datas para o formato 'yyyy/mm/dd'
+        startDate = formatDate(startDate);
+        endDate = formatDate(endDate);
 
-    //     return { startDate, endDate };
-    // }
+        return { startDate, endDate };
+    }
 
     function transformData(data) {
         return data.sort((a, b) => a - b)
@@ -147,7 +166,7 @@ export default function Chart({ graphicDatas }) {
         var year = date.getFullYear();
         var month = ("0" + (date.getMonth() + 1)).slice(-2); // Adiciona um zero à frente se necessário
         var day = ("0" + date.getDate()).slice(-2); // Adiciona um zero à frente se necessário
-        // return year + "/" + month + "/" + day;
+        return year + "/" + month + "/" + day;
         return day;
     }
 
@@ -167,10 +186,10 @@ export default function Chart({ graphicDatas }) {
                 <div className='mt-[24px]'>
                     <div className='pt-[13px] pb-[15px] px-[16px] m-0 grid w-full gap-y-[4px]'>
                         <span className="m-0 p-0 text-[14px] font-semibold leading-[20px] text-neutral_900">
-                            Title
+                            {titleChart}
                         </span>
                         <span className="text-xs font-medium text-neutral_700">
-                            You can identify your most engaged users by using cohorts.
+                            {descriptionChart}
                         </span>
                     </div>
                     <hr className="border-1/2 border-solid border-neutral_300" />
@@ -207,6 +226,7 @@ export default function Chart({ graphicDatas }) {
                                 legendPosition: 'middle'
                             }}
                             enableGridX={false}
+                            isInteractive={false}
                             enablePoints={false}
                             pointSize={10}
                             pointColor={{ from: 'color', modifiers: [] }}

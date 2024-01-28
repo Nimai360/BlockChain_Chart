@@ -12,11 +12,9 @@ import {
   MenuList,
   MenuItem,
   Button,
-  Card,
   Typography,
 } from "@material-tailwind/react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
-import { CursorArrowRaysIcon } from "@heroicons/react/24/solid";
 import { ChevronUpIcon } from "@heroicons/react/24/solid";
 
 export default function Header() {

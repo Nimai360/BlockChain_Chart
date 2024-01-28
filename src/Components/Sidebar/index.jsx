@@ -64,6 +64,7 @@ export default function Sidebar({ onChangeDatas }) {
 
     function expandContractsToMetrics(matchingChartDataIds) {
         // Agora que tem o contrato e já vinculou as métricas, essa função cria um item para cada operação da métrica de ERC20_metrics.json, baseado no contrato selecionado
+        setAllMetricsOptions([]);
         matchingChartDataIds.map(item =>
             item.operations.map(operation => {
                 const metric = {
@@ -76,7 +77,7 @@ export default function Sidebar({ onChangeDatas }) {
                     'metric_display_name': item.metric_display_name,
                     'operations_id': operation.id,
                     'operations': operation,
-                    'checked': item.checked,
+                    'checked': true, //item.checked,
                     'metric_description': `${operation.operation_description} for ${item.name} (${item.contract_type}) on ${item.chain_name}`,
                 }
                 setAllMetricsOptions(prevMetrics => [...prevMetrics, metric]);
@@ -104,7 +105,7 @@ export default function Sidebar({ onChangeDatas }) {
             setAllContracts(prevMetrics => [...prevMetrics, metric]);
         } else {
             setAllContracts(prevMetrics => {
-                const index = prevMetrics.findIndex(item => (item.name === metric.name) && (item.chain_name === metric.chain_name));
+                const index = prevMetrics.findIndex(item => (item.id === metric.id));
                 if (index !== -1) {
                     const newMetrics = [...prevMetrics];
                     newMetrics.splice(index, 1);
@@ -113,15 +114,15 @@ export default function Sidebar({ onChangeDatas }) {
                 return prevMetrics;
             });
 
-            // Atualiza a lista de Metrics, com base nos contratos selecionados. Adicionando o contrato na lista
-            setAllMetricsOptions(prevMetrics => prevMetrics.filter(item => !(item.name == contract.name) && (item.chain_name == contract.chain_name)));
+            // Atualiza a lista de Metrics, com base nos contratos selecionados. Adicionando o contrato na lista ou removendo todos os itens de Metrics pertinente a aquele contrato
+            setAllMetricsOptions(allMetricsOptions.filter(item => item.id != contract.id));
         }
     };
 
     const handleMetricChange = (item) => {
         // Atualiza o status do item da Metrics (checked true ou false)
         setAllMetricsOptions(prevMetrics => {
-            const index = prevMetrics.findIndex(metric => metric.operations_id === item.operations_id);
+            const index = prevMetrics.findIndex(metric => metric.operations_id === item.operations_id && metric.id === item.id);
             if (index !== -1) {
                 const newMetrics = [...prevMetrics];
                 newMetrics[index] = { ...newMetrics[index], checked: !newMetrics[index].checked };
