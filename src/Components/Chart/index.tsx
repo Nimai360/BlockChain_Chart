@@ -20,6 +20,19 @@ interface ChartProps {
   descriptionChart: string;
 }
 
+interface ConvertedGraphicDatasItem {
+  metric_display_name: string;
+  id: string;
+  color: string;
+  data: any[];
+  checked: boolean;
+}
+
+interface Item {
+  checked: boolean;
+  // outras propriedades do item aqui
+}
+
 const blank_model_chart = [
   {
     id: "",
@@ -44,14 +57,10 @@ const Chart: React.FC<ChartProps> = ({
 }) => {
   const [convertedGraphicDatas, setConvertedGraphicDatas] =
     useState<any[]>(blank_model_chart);
-  const [hide, setHide] = useState(false);
-
-  const handleClick = () => {
-    setHide(!hide);
-  };
+  const [hide, setHide] = useState<boolean>(false);
+  const [allItensChecked, setAllItensChecked] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log(convertedGraphicDatas);
     if (
       !graphicDatas ||
       !graphicDatas.length ||
@@ -66,6 +75,48 @@ const Chart: React.FC<ChartProps> = ({
     setConvertedGraphicDatas(filteredData);
   }, [graphicDatas]);
 
+  const handleClick = () => {
+    setHide(!hide);
+  };
+
+  // Verifica se todos os itens da table estão ativos, se estiverem, muda o checkbox pai
+  useEffect(() => {
+    const allChecked = convertedGraphicDatas.every(
+      (item) => item.checked === true
+    );
+    setAllItensChecked(allChecked);
+  }, [convertedGraphicDatas]);
+
+  // Muda o estado checked do checkbox do item na table
+  const handleCheckboxChange = (row: ConvertedGraphicDatasItem) => {
+    setConvertedGraphicDatas((prevGraphic) => {
+      const index = convertedGraphicDatas.findIndex(
+        (cG) => cG.id === row.id && cG.color === row.color
+      );
+      if (index !== -1) {
+        const newGraphicItem = [...prevGraphic];
+        newGraphicItem[index] = {
+          ...newGraphicItem[index],
+          checked: !newGraphicItem[index].checked,
+        };
+        return newGraphicItem;
+      }
+      return prevGraphic;
+    });
+
+    console.log(convertedGraphicDatas);
+  };
+
+  // Muda o estado checked do checkbox do pai e dos filhos, da table
+  const handleCheckboxChangeAll = () => {
+    setAllItensChecked(!allItensChecked);
+    setConvertedGraphicDatas(prevState => 
+       prevState.map(item => ({...item, checked: !allItensChecked}))
+    );
+   };
+   
+
+  // Filtrar os dados de charts_data.json baseado na metric_id, operation, contract_id e field
   function findGraphicDatasInCharts_data(graphicDatas: any[]): any[] {
     return Charts_data.filter((chartItem) =>
       graphicDatas.some(
@@ -139,7 +190,6 @@ const Chart: React.FC<ChartProps> = ({
         startDate = new Date(latestDate);
         startDate.setFullYear(startDate.getFullYear() - 1);
         endDate = latestDate;
-        // console.log(startDate, endDate);
         break;
       default:
         throw new Error("Invalid period");
@@ -152,15 +202,22 @@ const Chart: React.FC<ChartProps> = ({
     return { startDate, endDate };
   }
 
+  // Recebe os dados filtrados do charts_data.json e o converte para modelo que é usado no gráfico
   function transformData(data: any[]): any[] {
     return data
       .sort((a, b) => a - b)
       .map((item) => ({
+        metric_display_name: graphicDatas.find(
+          (metrica) =>
+            metrica.metric_id ===
+            item.data.metadata["A: Transfer ERC-20"].metric_id
+        ).metric_display_name,
         id: item.data.metadata["A: Transfer ERC-20"].contract_name,
         color: `hsl(${Math.floor(Math.random() * 256)}, 70%, 50%)`,
         data: Object.entries(item.data.series["A: Transfer ERC-20"]).map(
           ([x, y]) => ({ x: formatDate(new Date(Number(x))), y: Number(y) })
         ),
+        checked: true,
       }));
   }
 
@@ -173,6 +230,7 @@ const Chart: React.FC<ChartProps> = ({
     return day;
   }
 
+  // Pega a cor do gráfico (hsl) e converte para hexadecimal (#rrggbb)
   function hslToHex(hsl: string) {
     let parts = hsl.substring(4, hsl.length - 1).split(",");
     let h = parseInt(parts[0]);
@@ -233,7 +291,7 @@ const Chart: React.FC<ChartProps> = ({
         <ChartLine
           titleChart={titleChart}
           descriptionChart={descriptionChart}
-          convertedGraphicDatas={convertedGraphicDatas}
+          convertedGraphicDatas={convertedGraphicDatas.filter((d) => d.checked)}
         />
 
         <table className="overflow-x-hidden table-auto text-left">
@@ -243,6 +301,8 @@ const Chart: React.FC<ChartProps> = ({
                 <div className="flex items-center pl-2 gap-2 min-w-[150px]">
                   <input
                     type="checkbox"
+                    checked={allItensChecked}
+                    onChange={handleCheckboxChangeAll}
                     className="ring-0 z-50 rounded-[4px] border-solid border-gray-300 text-blue-500 focus:ring-0 size-[16px]"
                   />
                   <div
@@ -269,7 +329,7 @@ const Chart: React.FC<ChartProps> = ({
               {TABLE_HEAD.map((head, index) => (
                 <React.Fragment key={head}>
                   {index === 0 && (
-                    <th className="min-w-[100px] pb-[10px] m-0 p-0 border-solid text-center border-neutral_300 border-t-[0px] border-b-[1px] border-l-[0px] border-r-[1px] bg-transparent px-[27px]">
+                    <th className="min-w-[120px] pb-[10px] m-0 p-0 border-solid text-center border-neutral_300 border-t-[0px] border-b-[1px] border-l-[0px] border-r-[1px] bg-transparent px-[27px]">
                       <Typography
                         placeholder=""
                         variant="small"
@@ -284,7 +344,7 @@ const Chart: React.FC<ChartProps> = ({
                     Array.from({ length: qtColumns }).map((_, i) => (
                       <th
                         key={`${head}-${i}`}
-                        className="min-w-[100px] pb-[10px] m-0 p-0 border-solid text-center border-neutral_300 border-t-[0px] border-b-[1px] border-l-[0px] border-r-[0px] bg-transparent px-[27px]"
+                        className="min-w-[120px] pb-[10px] m-0 p-0 border-solid text-center border-neutral_300 border-t-[0px] border-b-[1px] border-l-[0px] border-r-[0px] bg-transparent px-[27px]"
                       >
                         <Typography
                           placeholder=""
@@ -318,6 +378,8 @@ const Chart: React.FC<ChartProps> = ({
                       <div className="flex items-center gap-2 min-w-[150px]">
                         <input
                           type="checkbox"
+                          checked={row.checked}
+                          onChange={() => handleCheckboxChange(row)}
                           // style={{color: color}}
                           className={`ring-0 z-50 rounded-[4px] border-solid border-gray-300 focus:ring-0 size-[16px]`}
                         />
@@ -331,7 +393,7 @@ const Chart: React.FC<ChartProps> = ({
                             color="blue-gray"
                             className={classTypography}
                           >
-                            {row.id}
+                            {row.metric_display_name} {row.id}
                           </Typography>
                         </div>
                       </div>
