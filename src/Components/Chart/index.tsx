@@ -23,7 +23,7 @@ interface ChartProps {
 const blank_model_chart = [
   {
     id: "",
-    color: "hsl(0, 00%, 00%)",
+    color: "hsl(255, 0%, 0%)",
     data: [
       {
         x: "",
@@ -37,109 +37,13 @@ const TABLE_HEAD = ["Average", "Jun"];
 
 const qtColumns = 6;
 
-const TABLE_ROWS = [
-  {
-    chain_name: "Ethereum",
-    data: [
-      {
-        date: "1",
-        value: "10",
-      },
-      {
-        date: "2",
-        value: "11",
-      },
-      {
-        date: "3",
-        value: "12",
-      },
-      {
-        date: "4",
-        value: "13",
-      },
-      {
-        date: "5",
-        value: "14",
-      },
-      {
-        date: "6",
-        value: "15",
-      },
-      {
-        date: "7",
-        value: "16",
-      },
-      {
-        date: "8",
-        value: "17",
-      },
-      {
-        date: "9",
-        value: "18",
-      },
-      {
-        date: "10",
-        value: "19",
-      },
-    ],
-  },
-  {
-    chain_name: "Bitcoin",
-    data: [
-      {
-        date: "1",
-        value: "20",
-      },
-      {
-        date: "2",
-        value: "21",
-      },
-      {
-        date: "3",
-        value: "22",
-      },
-      {
-        date: "4",
-        value: "23",
-      },
-      {
-        date: "5",
-        value: "24",
-      },
-      {
-        date: "6",
-        value: "25",
-      },
-      {
-        date: "7",
-        value: "26",
-      },
-      {
-        date: "8",
-        value: "27",
-      },
-      {
-        date: "9",
-        value: "28",
-      },
-      {
-        date: "10",
-        value: "29",
-      },
-    ],
-  },
-];
-
 const Chart: React.FC<ChartProps> = ({
   graphicDatas,
   titleChart,
   descriptionChart,
 }) => {
-  const [open, setOpen] = useState<number>(0);
-  const [openSubMenu, setOpenSubMenu] = useState<boolean>(false);
   const [convertedGraphicDatas, setConvertedGraphicDatas] =
     useState<any[]>(blank_model_chart);
-
   const [hide, setHide] = useState(false);
 
   const handleClick = () => {
@@ -147,14 +51,15 @@ const Chart: React.FC<ChartProps> = ({
   };
 
   useEffect(() => {
+    console.log(convertedGraphicDatas);
     if (
       !graphicDatas ||
       !graphicDatas.length ||
       typeof graphicDatas == undefined
     ) {
+      setConvertedGraphicDatas(blank_model_chart);
       return;
     }
-    console.log(convertedGraphicDatas);
     const charts_data = findGraphicDatasInCharts_data(graphicDatas);
     const transformedData = transformData(charts_data);
     const filteredData = filterByDate(transformedData, "12M");
@@ -268,9 +173,58 @@ const Chart: React.FC<ChartProps> = ({
     return day;
   }
 
-  const handleOpen = (value: number) => {
-    setOpen(open === value ? 0 : value);
-  };
+  function hslToHex(hsl: string) {
+    let parts = hsl.substring(4, hsl.length - 1).split(",");
+    let h = parseInt(parts[0]);
+    let s = parseFloat(parts[1]) / 100;
+    let l = parseFloat(parts[2]) / 100;
+
+    if (s === 0) {
+      let hex = Math.round(l * 255).toString(16);
+      return "#" + ("0" + hex).slice(-2);
+    }
+
+    let c = (1 - Math.abs(2 * l - 1)) * s;
+    let x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    let m = l - c / 2;
+    let r = 0,
+      g = 0,
+      b = 0;
+
+    if (0 <= h && h < 60) {
+      r = c;
+      g = x;
+      b = 0;
+    } else if (60 <= h && h < 120) {
+      r = x;
+      g = c;
+      b = 0;
+    } else if (120 <= h && h < 180) {
+      r = 0;
+      g = c;
+      b = x;
+    } else if (180 <= h && h < 240) {
+      r = 0;
+      g = x;
+      b = c;
+    } else if (240 <= h && h < 300) {
+      r = x;
+      g = 0;
+      b = c;
+    } else if (300 <= h && h < 360) {
+      r = c;
+      g = 0;
+      b = x;
+    }
+
+    r = Math.round((r + m) * 255);
+    g = Math.round((g + m) * 255);
+    b = Math.round((b + m) * 255);
+
+    let hex =
+      "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    return hex;
+  }
 
   return (
     <>
@@ -295,7 +249,13 @@ const Chart: React.FC<ChartProps> = ({
                     onClick={handleClick}
                     className="cursor-pointer m-0 p-0 font-inter text-[14px] leading-[20px] text-neutral_700 font-medium gap-x-1 flex items-center"
                   >
-                    <span>Events ({convertedGraphicDatas.length})</span>
+                    <span>
+                      Events (
+                      {convertedGraphicDatas[0].id == ""
+                        ? 0
+                        : convertedGraphicDatas.length}
+                      )
+                    </span>
 
                     <ChevronDownIcon
                       strokeWidth={2.5}
@@ -345,72 +305,73 @@ const Chart: React.FC<ChartProps> = ({
               hide ? "-translate-y-4 opacity-0" : ""
             }`}
           >
-            {convertedGraphicDatas.map((row, index) => {
-              const classes =
-                "justify-center text-center bg-transparent border-solid border-neutral_300 border-none px-[27px]";
-              const classTypography =
-                "font-inter text-[14px] leading-[20px] text-neutral_700 font-normal";
-
-              return (
-                <tr key={index} className="">
-                  <td className="pl-2 py-2">
-                    <div className="flex items-center gap-2 min-w-[150px]">
-                      <input
-                        type="checkbox"
-                        className="ring-0 z-50 rounded-[4px] border-solid border-gray-300 text-blue-500 focus:ring-0 size-[16px]"
-                      />
-                      <div
-                        onClick={handleClick}
-                        className="cursor-pointer m-0 p-0 font-inter text-[14px] leading-[20px] text-neutral_700 font-medium gap-x-1 flex items-center"
-                      >
-                        <Typography
-                          placeholder=""
-                          variant="small"
-                          color="blue-gray"
-                          className={classTypography}
+            {convertedGraphicDatas[0].id != "" &&
+              convertedGraphicDatas.map((row, index) => {
+                const classes =
+                  "break-words justify-center text-center bg-transparent border-solid border-neutral_300 border-none px-[27px]";
+                const classTypography =
+                  "break-words font-inter text-[14px] leading-[20px] text-neutral_700 font-normal";
+                const color = hslToHex(row.color);
+                return (
+                  <tr key={index} className="">
+                    <td className="pl-2 py-2">
+                      <div className="flex items-center gap-2 min-w-[150px]">
+                        <input
+                          type="checkbox"
+                          // style={{color: color}}
+                          className={`ring-0 z-50 rounded-[4px] border-solid border-gray-300 focus:ring-0 size-[16px]`}
+                        />
+                        <div
+                          onClick={handleClick}
+                          className="cursor-pointer m-0 p-0 font-inter text-[14px] leading-[20px] text-neutral_700 font-medium gap-x-1 flex items-center"
                         >
-                          {row.id}
-                        </Typography>
+                          <Typography
+                            placeholder=""
+                            variant="small"
+                            color="blue-gray"
+                            className={classTypography}
+                          >
+                            {row.id}
+                          </Typography>
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td
-                    className={`border-solid text-center border-neutral_300 border-t-[0px] border-b-[0px] border-l-[0px] border-r-[1px]`}
-                  >
-                    <Typography
-                      placeholder=""
-                      variant="small"
-                      color="blue-gray"
-                      className={classTypography}
+                    </td>
+                    <td
+                      className={`border-solid text-center border-neutral_300 border-t-[0px] border-b-[0px] border-l-[0px] border-r-[1px]`}
                     >
-                      {(() => {
-                        const firstValues = row.data.slice(0, qtColumns);
-                        const sum = firstValues.reduce(
-                          (acc: string, curr: { y: any }) =>
-                            acc + Number(curr.y),
-                          0
-                        );
-                        console.log(firstValues)
-                        const average = sum / firstValues.length;
-                        return average.toFixed(2);
-                      })()}
-                    </Typography>
-                  </td>
-                  {Array.from({ length: qtColumns }).map((_, i) => (
-                    <td key={i} className={classes}>
                       <Typography
                         placeholder=""
                         variant="small"
                         color="blue-gray"
                         className={classTypography}
                       >
-                        {row.data[i]?.y || ""}
+                        {(() => {
+                          const firstValues = row.data.slice(0, qtColumns);
+                          const sum = firstValues.reduce(
+                            (acc: string, curr: { y: any }) =>
+                              acc + Number(curr.y),
+                            0
+                          );
+                          const average = sum / firstValues.length;
+                          return average.toFixed(2);
+                        })()}
                       </Typography>
                     </td>
-                  ))}
-                </tr>
-              );
-            })}
+                    {Array.from({ length: qtColumns }).map((_, i) => (
+                      <td key={i} className={classes}>
+                        <Typography
+                          placeholder=""
+                          variant="small"
+                          color="blue-gray"
+                          className={classTypography}
+                        >
+                          {row.data[i]?.y || ""}
+                        </Typography>
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })}
           </tbody>
         </table>
       </div>
