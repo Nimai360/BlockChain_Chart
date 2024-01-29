@@ -3,7 +3,7 @@ import Contract_datasources from '../../assets/data/contract_datasources.json';
 import Charts_data from '../../assets/data/charts_data.json';
 import ERC20_metrics from '../../assets/data/ERC20_metrics.json';
 
-import Accordion_Title from "../Accordion_Title";
+import Accordion_Title from "../Accordion_Title/";
 import Metric_Options from "../Metric_Options";
 import Metric_Card from "../Metric_Card";
 import Contracts_DataSource from "../Contracts_DataSource";
@@ -17,9 +17,38 @@ import {
 
 const contract_type_Contracts = ['ERC20'];
 
-export default function Sidebar({ onChangeDatas }) {
-    const [allContracts, setAllContracts] = useState([]);
-    const [allMetricsOptions, setAllMetricsOptions] = useState([]);
+interface SidebarProps {
+    onChangeDatas: (data: any[]) => void;
+   }
+
+   interface Contract {
+    id: string;
+    name: string;
+    chain_name: string;
+    contract_type: string;
+    metric_id: string;
+    metric: string;
+    metric_display_name: string;
+    operations_id: string;
+    operations: any[];
+    checked: boolean;
+    thumbnail: string | null;
+   }
+
+   interface Item {
+    id: string;
+    operations_id: string;
+    checked: boolean;
+   }
+
+   interface Operation {
+    id: string;
+    operation_description: string;
+   }
+   
+   const Sidebar: React.FC<SidebarProps> = ({ onChangeDatas }) => {
+    const [allContracts, setAllContracts] = useState<any[]>([]);
+    const [allMetricsOptions, setAllMetricsOptions] = useState<any[]>([]);
 
     useEffect(() => {
         // Quando um contrato é selecionado e desmarcado, atualiza a lista de métricas e consequentemente os itens de cada operação que será exibido em Metrics
@@ -32,7 +61,7 @@ export default function Sidebar({ onChangeDatas }) {
     }, [allMetricsOptions]);
 
 
-    function updateMetrics(allContracts) {
+    function updateMetrics(allContracts: any[]) {
         // Com base nos contratos selecionados, busca em Charts_data informações importantes para o item de Metrics
         let matchingChartDataIds = Charts_data.map(metric => {
             const contract = metric.data.metadata['A: Transfer ERC-20'];
@@ -54,19 +83,20 @@ export default function Sidebar({ onChangeDatas }) {
             if (matchingMetric) {
                 chartDataId.metric_display_name = matchingMetric.metric_display_name;
                 chartDataId.operations = matchingMetric.operations;
-                chartDataId.operations_id = matchingMetric.operations.id;
+                chartDataId.operations_id = matchingMetric.operations[0].id;
+                // pode ter erro aqui no [0]
             }
             return chartDataId;
         });
 
         expandContractsToMetrics(matchingChartDataIds);
     }
-
-    function expandContractsToMetrics(matchingChartDataIds) {
-        // Agora que tem o contrato e já vinculou as métricas, essa função cria um item para cada operação da métrica de ERC20_metrics.json, baseado no contrato selecionado
-        setAllMetricsOptions([]);
+    
+    // Agora que tem o contrato e já vinculou as métricas, essa função cria um item para cada operação da métrica de ERC20_metrics.json, baseado no contrato selecionado
+    function expandContractsToMetrics(matchingChartDataIds: any[]) {
+        setAllMetricsOptions([])
         matchingChartDataIds.map(item =>
-            item.operations.map(operation => {
+           item.operations.map((operation: Operation) => {
                 const metric = {
                     'id': item.id,
                     'name': item.name,
@@ -85,7 +115,7 @@ export default function Sidebar({ onChangeDatas }) {
             ));
     }
 
-    const handleContractChange = (contract, checked) => {
+    const handleContractChange = (contract: any, checked: boolean) => {
         // Cria um modelo base para o contrato, com algumas informações que serão usadas em outras partes
         const metric = {
             'id': contract['id'],
@@ -119,7 +149,7 @@ export default function Sidebar({ onChangeDatas }) {
         }
     };
 
-    const handleMetricChange = (item) => {
+    const handleMetricChange = (item: Item) => {
         // Atualiza o status do item da Metrics (checked true ou false)
         setAllMetricsOptions(prevMetrics => {
             const index = prevMetrics.findIndex(metric => metric.operations_id === item.operations_id && metric.id === item.id);
@@ -134,11 +164,11 @@ export default function Sidebar({ onChangeDatas }) {
 
     return (
         <>
-            <Card className=" m-0 p-0 h-[calc(100vh-123px)] w-full shadow-none bg-neutral_100 rounded-none border-t-0 border-l-0 border-b-0 border-r-2 border-solid border-r-neutral_300">
-                <List className="m-0 px-[18px] py-4">
+            <Card placeholder='' className=" m-0 p-0 h-[calc(100vh-123px)] w-full shadow-none bg-neutral_100 rounded-none border-t-0 border-l-0 border-b-0 border-r-2 border-solid border-r-neutral_300">
+                <List placeholder='' className="m-0 px-[18px] py-4">
 
                     <Accordion_Title title="Data Source">
-                        <Contracts_DataSource contracts={Contract_datasources} contract_type_Contracts={contract_type_Contracts} onCheckboxChange={handleContractChange} />
+                        <Contracts_DataSource contract_type_Contracts={contract_type_Contracts} onCheckboxChange={handleContractChange} />
                     </Accordion_Title>
 
                     <Accordion_Title title="Metrics">
@@ -153,7 +183,7 @@ export default function Sidebar({ onChangeDatas }) {
 
                     <Accordion_Title title="Filter">
                         <AccordionBody className="py-1 bg-white_color rounded-md border border-solid border-neutral_300">
-                            <ListItem className="rounded-none h-[24px] m-0 p-0 justify-center text-neutral_700">
+                            <ListItem placeholder='' className="rounded-none h-[24px] m-0 p-0 justify-center text-neutral_700">
                                 <div className="flex text-xs">
                                     <span className="">Add new</span>
                                 </div>
@@ -163,7 +193,7 @@ export default function Sidebar({ onChangeDatas }) {
 
                     <Accordion_Title title="Breakdown">
                         <AccordionBody className="py-1 bg-white_color rounded-md border border-solid border-neutral_300">
-                            <ListItem className="rounded-none h-[24px] m-0 p-0 justify-center text-neutral_700">
+                            <ListItem placeholder='' className="rounded-none h-[24px] m-0 p-0 justify-center text-neutral_700">
                                 <div className="flex text-xs">
                                     <span className="">Add new</span>
                                 </div>
@@ -175,3 +205,5 @@ export default function Sidebar({ onChangeDatas }) {
         </>
     );
 }
+
+export default Sidebar;

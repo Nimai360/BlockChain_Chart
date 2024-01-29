@@ -10,21 +10,21 @@ function App() {
   const [titlePage, setTitlePage] = useState('title');
   const [descriptionPage, setDescriptionPage] = useState('You can identify your most engaged users by using cohorts.');
 
-  const handleDataChange = (datas) => {
+  const handleDataChange = (datas: any) => {
     setGraphicDatas(datas);
   };
 
-  const handleTitleChange = (title) => {
+  const handleTitleChange = (title: string) => {
     setTitlePage(title);
   };
 
-  const handleSubtitleChange = (description) => {
+  const handleSubtitleChange = (description: string) => {
     setDescriptionPage(description);
   };
 
   return (
     <>
-      <div className="overflow-hidden h-screen">
+      <div className="overflow-x-hidden h-screen">
         <Header />
         <Title onTitleChange={handleTitleChange} onSubtitleChange={handleSubtitleChange} />
         <div className="m-0 p-0 grid grid-cols-10 grid-rows-7 ">
