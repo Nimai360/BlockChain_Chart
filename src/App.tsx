@@ -24,7 +24,7 @@ function App() {
 
   return (
     <>
-      <div className="overflow-x-hidden h-screen">
+      <div className="overflow-hidden h-screen">
         <Header />
         <Title onTitleChange={handleTitleChange} onSubtitleChange={handleSubtitleChange} />
         <div className="m-0 p-0 grid grid-cols-10 grid-rows-7 ">
