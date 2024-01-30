@@ -26,7 +26,6 @@ const Metric_Options: React.FC<Metric_OptionsProps> = ({
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchText(event.target.value);
   };
-
   return (
     <>
       <AccordionBody className="m-0 w-full bg-white_color rounded-md border border-solid border-neutral_300">
@@ -63,10 +62,11 @@ const Metric_Options: React.FC<Metric_OptionsProps> = ({
                     .toLowerCase()
                     .includes(searchText.toLowerCase())
                 )
-                .map((item) => (
+                .map((item, index) => { 
+                  return(
                   <ListItem
                     placeholder=""
-                    key={item.title + "" + item.operations.operation_name}
+                    key={index}
                     className={`m-0 mb-[1px] gap-[10px] py-[10px] px-[4px] font-inter font-medium text-[12px] hover:bg-primary_100 leading-[18px] 
                 ${
                   item.checked
@@ -97,7 +97,7 @@ const Metric_Options: React.FC<Metric_OptionsProps> = ({
                     </ListItemPrefix>
                     {item.metric_description}
                   </ListItem>
-                ))}
+                )})}
             </div>
           </div>
         </List>
