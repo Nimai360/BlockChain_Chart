@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
-import Contract_datasources from "../../assets/data/contract_datasources.json";
+import React, { useState, useEffect } from "react";
 import Charts_data from "../../assets/data/charts_data.json";
 import ERC20_metrics from "../../assets/data/ERC20_metrics.json";
 
-import Accordion_Title from "../Accordion_Title/";
-import Metric_Options from "../Metric_Options";
-import Metric_Card from "../Metric_Card";
-import Contracts_DataSource from "../Contracts_DataSource";
+import AccordionTitle from "../Accordion_Title/";
+import MetricOptions from "../Metric_Options";
+import MetricCard from "../Metric_Card";
+import ContractsDataSource from "../Contracts_DataSource";
 
 import { Card, List, ListItem, AccordionBody } from "@material-tailwind/react";
 
@@ -14,20 +13,6 @@ const contract_type_Contracts = ["ERC20"];
 
 interface SidebarProps {
   onChangeDatas: (data: any[]) => void;
-}
-
-interface Contract {
-  id: string;
-  name: string;
-  chain_name: string;
-  contract_type: string;
-  metric_id: string;
-  metric: string;
-  metric_display_name: string;
-  operations_id: string;
-  operations: any[];
-  checked: boolean;
-  thumbnail: string | null;
 }
 
 interface Item {
@@ -105,7 +90,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onChangeDatas }) => {
           metric_display_name: item.metric_display_name,
           operations_id: operation.id,
           operations: operation,
-          checked: true, //item.checked,
+          checked: item.checked,
           metric_description: `${operation.operation_description} for ${item.name} (${item.contract_type}) on ${item.chain_name}`,
         };
         setAllMetricsOptions((prevMetrics) => [...prevMetrics, metric]);
@@ -144,7 +129,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onChangeDatas }) => {
 
       // Atualiza a lista de Metrics, com base nos contratos selecionados. Adicionando o contrato na lista ou removendo todos os itens de Metrics pertinente a aquele contrato
       setAllMetricsOptions(
-        allMetricsOptions.filter((item) => item.id != contract.id)
+        allMetricsOptions.filter((item) => item.id !== contract.id)
       );
     }
   };
@@ -175,29 +160,29 @@ const Sidebar: React.FC<SidebarProps> = ({ onChangeDatas }) => {
         className=" m-0 p-0 h-[calc(100vh-123px)] w-full shadow-none bg-neutral_100 rounded-none border-t-0 border-l-0 border-b-0 border-r-2 border-solid border-r-neutral_300"
       >
         <List placeholder="" className="m-0 px-[18px] py-4">
-          <Accordion_Title title="Data Source">
-            <Contracts_DataSource
+          <AccordionTitle title="Data Source">
+            <ContractsDataSource
               contract_type_Contracts={contract_type_Contracts}
               onCheckboxChange={handleContractChange}
             />
-          </Accordion_Title>
+          </AccordionTitle>
 
-          <Accordion_Title title="Metrics">
-            <Metric_Options
+          <AccordionTitle title="Metrics">
+            <MetricOptions
               allMetrics={allMetricsOptions}
               onOptionChange={handleMetricChange}
             />
-          </Accordion_Title>
+          </AccordionTitle>
 
           <div className="flex flex-col gap-[10px]">
             {allMetricsOptions
               .filter((metric) => metric.checked)
               .map((item) => (
-                <Metric_Card item={item} onOptionChange={handleMetricChange} />
+                <MetricCard item={item} onOptionChange={handleMetricChange} />
               ))}
           </div>
 
-          <Accordion_Title title="Filter">
+          <AccordionTitle title="Filter">
             <AccordionBody className="py-1 bg-white_color rounded-md border border-solid border-neutral_300">
               <ListItem
                 placeholder=""
@@ -208,9 +193,9 @@ const Sidebar: React.FC<SidebarProps> = ({ onChangeDatas }) => {
                 </div>
               </ListItem>
             </AccordionBody>
-          </Accordion_Title>
+          </AccordionTitle>
 
-          <Accordion_Title title="Breakdown">
+          <AccordionTitle title="Breakdown">
             <AccordionBody className="py-1 bg-white_color rounded-md border border-solid border-neutral_300">
               <ListItem
                 placeholder=""
@@ -221,7 +206,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onChangeDatas }) => {
                 </div>
               </ListItem>
             </AccordionBody>
-          </Accordion_Title>
+          </AccordionTitle>
         </List>
       </Card>
     </>

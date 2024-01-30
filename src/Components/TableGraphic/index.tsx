@@ -1,11 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-  Typography,
-  ListItem,
-  Accordion,
-  AccordionHeader,
-} from "@material-tailwind/react";
-import { ChevronDownIcon, PlusIcon } from "@heroicons/react/24/outline";
+import React from "react";
+import { Typography } from "@material-tailwind/react";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 interface ConvertedGraphicDatasItem {
   metric_display_name: string;
@@ -20,6 +15,7 @@ const TABLE_HEAD = ["Average", "Jun"];
 const TableGraphic: React.FC<{
   convertedGraphicDatas: ConvertedGraphicDatasItem[];
   handleCheckboxChange: (row: ConvertedGraphicDatasItem) => void;
+
   handleCheckboxChangeAll: () => void;
   allItensChecked: boolean;
   hide: boolean;
@@ -86,6 +82,7 @@ const TableGraphic: React.FC<{
       "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
     return hex;
   }
+  console.log(convertedGraphicDatas);
   return (
     <>
       <table className="overflow-x-hidden table-auto text-left">
@@ -105,9 +102,11 @@ const TableGraphic: React.FC<{
                 >
                   <span>
                     Events (
-                    {convertedGraphicDatas[0].id == ""
-                      ? 0
-                      : convertedGraphicDatas.length}
+                    {convertedGraphicDatas &&
+                    convertedGraphicDatas.length > 0 &&
+                    convertedGraphicDatas[0].id !== ""
+                      ? convertedGraphicDatas.length
+                      : 0}
                     )
                   </span>
 
@@ -159,13 +158,14 @@ const TableGraphic: React.FC<{
             hide ? "-translate-y-4 opacity-0" : ""
           }`}
         >
-          {convertedGraphicDatas[0].id != "" &&
+          {convertedGraphicDatas &&
+            convertedGraphicDatas.length > 0 &&
+            convertedGraphicDatas[0].id !== "" &&
             convertedGraphicDatas.map((row, index) => {
               const classes =
                 "break-words justify-center text-center bg-transparent border-solid border-neutral_300 border-none px-[27px]";
               const classTypography =
                 "break-words font-inter text-[14px] leading-[20px] text-neutral_700 font-normal";
-              const color = hslToHex(row.color);
               return (
                 <tr key={index} className="">
                   <td className="pl-2 py-2">
@@ -174,7 +174,7 @@ const TableGraphic: React.FC<{
                         type="checkbox"
                         checked={row.checked}
                         onChange={() => handleCheckboxChange(row)}
-                        // style={{color: color}}
+                        // style={{color: hslToHex(row.color)}}
                         className={`ring-0 z-50 rounded-[4px] border-solid border-gray-300 focus:ring-0 size-[16px]`}
                       />
                       <div

@@ -65,6 +65,7 @@ const Chart: React.FC<ChartProps> = ({
 
   // Verifica se todos os itens da table estão ativos, se estiverem, muda o checkbox pai
   useEffect(() => {
+    if (convertedGraphicDatas.length === 0) return;
     const allChecked = convertedGraphicDatas.every(
       (item) => item.checked === true
     );
@@ -87,12 +88,11 @@ const Chart: React.FC<ChartProps> = ({
       }
       return prevGraphic;
     });
-
-    console.log(convertedGraphicDatas);
   };
 
   // Muda o estado checked do checkbox do pai e dos filhos, da table
   const handleCheckboxChangeAll = () => {
+    if (convertedGraphicDatas[0].id === "") return;
     setAllItensChecked(!allItensChecked);
     setConvertedGraphicDatas((prevState) =>
       prevState.map((item) => ({ ...item, checked: !allItensChecked }))
@@ -117,6 +117,10 @@ const Chart: React.FC<ChartProps> = ({
   }
 
   function filterByDate(data: any[], period: string): any[] {
+    if (!data || data.length === 0) {
+      return [];
+    }
+
     const latestDate = new Date(data[0].data[0].x);
     const { startDate, endDate } = getStartAndEndDates(period, latestDate);
 
@@ -130,6 +134,7 @@ const Chart: React.FC<ChartProps> = ({
       );
     });
   }
+
   function getStartAndEndDates(
     period: string,
     latestDate: Date
