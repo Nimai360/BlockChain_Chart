@@ -18,7 +18,7 @@ import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { ChevronUpIcon } from "@heroicons/react/24/solid";
 
 const Header: React.FC = () => {
-  const [openMenu, setOpenMenu] = useState<boolean>(false);
+  const [openMenuProfile, setOpenMenuProfile] = useState<boolean>(false);
   const [openSubMenu, setOpenSubMenu] = useState<boolean>(false);
 
   return (
@@ -32,19 +32,17 @@ const Header: React.FC = () => {
               alt="logo"
             />
             <span className="mr-2 cursor-pointer">Boards</span>
-            <Button
-              placeholder=""
-              variant="text"
-              className="hover:bg-transparent active:bg-transparent focus:bg-transparent w-auto px-0 flex items-center gap-3 capitalize tracking-normal text-white_color font-inter text-sm leading-snug font-semibold"
-            >
-              Reports{" "}
-              <ChevronDownIcon
-                strokeWidth={2.5}
-                className={`h-3.5 w-3.5 transition-transform ${
-                  openMenu ? "rotate-180" : ""
-                }`}
-              />
-            </Button>
+              <Button
+                placeholder=""
+                variant="text"
+                className="hover:bg-transparent active:bg-transparent focus:bg-transparent w-auto px-0 flex items-center gap-3 capitalize tracking-normal text-white_color font-inter text-sm leading-snug font-semibold"
+              >
+                Reports{" "}
+                <ChevronDownIcon
+                  strokeWidth={2.5}
+                  className={`h-3.5 w-3.5 transition-transform `}
+                />
+              </Button>
           </div>
 
           <div className="flex items-center gap-4 ml-auto">
@@ -62,7 +60,11 @@ const Header: React.FC = () => {
                 size="sm"
                 className="cursor-pointer"
               />
-              <Menu open={openMenu} handler={setOpenMenu} allowHover>
+              <Menu
+                open={openMenuProfile}
+                handler={setOpenMenuProfile}
+                allowHover
+              >
                 <MenuHandler>
                   <Button
                     placeholder=""
@@ -73,7 +75,7 @@ const Header: React.FC = () => {
                     <ChevronDownIcon
                       strokeWidth={2.5}
                       className={`h-3.5 w-3.5 transition-transform ${
-                        openMenu ? "rotate-180" : ""
+                        openMenuProfile ? "rotate-180" : ""
                       }`}
                     />
                   </Button>
