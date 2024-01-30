@@ -82,10 +82,12 @@ const TableGraphic: React.FC<{
       "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
     return hex;
   }
-  // console.log(convertedGraphicDatas);
+  let maxArrayLength = Math.max(...convertedGraphicDatas.map(item => item.data.length));
+  qtColumns = maxArrayLength;
+
   return (
     <>
-      <table className="overflow-x-hidden table-auto text-left">
+      <table className="table-auto text-left">
         <thead className="text-red">
           <tr className="">
             <th className=" pb-[10px] border-solid border-neutral_300 border-t-[0px] border-b-[1px] border-l-[0px] border-r-[0px] bg-transparent">
@@ -135,6 +137,7 @@ const TableGraphic: React.FC<{
                 )}
                 {index !== 0 &&
                   Array.from({ length: qtColumns }).map((_, i) => (
+                    
                     <th
                       key={`${head}-${i}`}
                       className="min-w-[120px] pb-[10px] m-0 p-0 border-solid text-center border-neutral_300 border-t-[0px] border-b-[1px] border-l-[0px] border-r-[0px] bg-transparent px-[27px]"
@@ -153,6 +156,7 @@ const TableGraphic: React.FC<{
             ))}
           </tr>
         </thead>
+
         <tbody
           className={`m-0 p-0 transition-all duration-500 ${
             hide ? "-translate-y-4 opacity-0" : ""
@@ -202,29 +206,49 @@ const TableGraphic: React.FC<{
                       className={classTypography}
                     >
                       {(() => {
-                        const firstValues = row.data.slice(0, qtColumns);
-                        const sum = firstValues.reduce(
-                          (acc: string, curr: { y: any }) =>
-                            acc + Number(curr.y),
+                        const sum = row.data.reduce(
+                          (total, item) => total + item["y"],
                           0
                         );
-                        const average = sum / firstValues.length;
+                        // const firstValues = row.data.slice(0, qtColumns);
+                        // const sum = firstValues.reduce(
+                        //   (acc: string, curr: { y: any }) =>
+                        //     acc + Number(curr.y),
+                        //   0
+                        // );
+                        const average = sum / row.data.length;
                         return average.toFixed(2);
                       })()}
                     </Typography>
                   </td>
-                  {Array.from({ length: qtColumns }).map((_, i) => (
-                    <td key={i} className={classes}>
-                      <Typography
-                        placeholder=""
-                        variant="small"
-                        color="blue-gray"
-                        className={classTypography}
-                      >
-                        {row.data[i]?.y || ""}
-                      </Typography>
-                    </td>
-                  ))}
+                  {/* {convertedGraphicDatas.map((item, index) => {
+                    return (
+                      <td key={index} className={classes}>
+                        <Typography
+                          placeholder=""
+                          variant="small"
+                          color="blue-gray"
+                          className={classTypography}
+                        >
+                          {item.data[index]?.y || ""}
+                        </Typography>
+                      </td>
+                    );
+                  })} */}
+                  {Array.from({ length: qtColumns }).map((_, i) => {
+                    return (
+                      <td key={i} className={`${classes}`}>
+                        <Typography
+                          placeholder=""
+                          variant="small"
+                          color="blue-gray"
+                          className={classTypography}
+                        >
+                          {row.data[i]?.y.toFixed(2) || ""}
+                        </Typography>
+                      </td>
+                    );
+                  })}
                 </tr>
               );
             })}

@@ -43,6 +43,9 @@ const Chart: React.FC<ChartProps> = ({
     useState<any[]>(blank_model_chart);
   const [hide, setHide] = useState<boolean>(false);
   const [allItensChecked, setAllItensChecked] = useState<boolean>(false);
+  const [daysFilter, setDaysFilter] = useState<number>(7);
+
+  // useEffect(() => {}, [daysFilter]);
 
   useEffect(() => {
     if (
@@ -55,13 +58,15 @@ const Chart: React.FC<ChartProps> = ({
     }
     const charts_data = findGraphicDatasInCharts_data(graphicDatas);
     const transformedData = transformData(charts_data);
-    const filteredData = filterByDate(transformedData, "12M");
-    setConvertedGraphicDatas(filteredData);
-  }, [graphicDatas]);
+    const filteredData = transformedData.map((item) => {
+      return {
+        ...item,
+        data: filterByDate(item, daysFilter),
+      };
+    });
 
-  const handleClick = () => {
-    setHide(!hide);
-  };
+    setConvertedGraphicDatas(filteredData);
+  }, [graphicDatas, daysFilter]);
 
   // Verifica se todos os itens da table estão ativos, se estiverem, muda o checkbox pai
   useEffect(() => {
@@ -71,6 +76,14 @@ const Chart: React.FC<ChartProps> = ({
     );
     setAllItensChecked(allChecked);
   }, [convertedGraphicDatas]);
+
+  const handleClick = () => {
+    setHide(!hide);
+  };
+
+  const handleDaysFilterSelected = (days: number) => {
+    setDaysFilter(days);
+  };
 
   // Muda o estado checked do checkbox do item na table
   const handleCheckboxChange = (row: ConvertedGraphicDatasItem) => {
@@ -116,16 +129,29 @@ const Chart: React.FC<ChartProps> = ({
     );
   }
 
-  function filterByDate(data: any[], period: string): any[] {
+  function sortDateMetricsData(data: any[]): any[] {
+    let new_data = data["data"];
+    new_data = new_data.sort((a: any, b: any) => {
+      let dateA: any = new Date(a.x);
+      let dateB: any = new Date(b.x);
+      return dateB - dateA;
+    });
+    return new_data;
+  }
+
+  function filterByDate(data: any[], period: number): any[] {
     if (!data || data.length === 0) {
       return [];
     }
+    // Já possui as informações ordenadas por data decrescente
+    let new_data = sortDateMetricsData(data);
 
-    const latestDate = new Date(data[0].data[0].x);
+    // new_data.map(item => null)
+    const latestDate = new Date(new_data[0].x);
     const { startDate, endDate } = getStartAndEndDates(period, latestDate);
 
-    return data.filter((item) => {
-      const itemDate = new Date(item.data[0].x);
+    return new_data.filter((item: { x: string | number | Date }) => {
+      const itemDate = new Date(item.x);
       const formattedItemDate = formatDate(itemDate);
 
       return (
@@ -136,7 +162,8 @@ const Chart: React.FC<ChartProps> = ({
   }
 
   function getStartAndEndDates(
-    period: string,
+    // period: string,
+    period: number,
     latestDate: Date
   ): { startDate: Date; endDate: Date } {
     let startDate = new Date(),
@@ -144,44 +171,48 @@ const Chart: React.FC<ChartProps> = ({
     startDate = new Date(formatDate(startDate));
     endDate = new Date(formatDate(endDate));
 
-    switch (period) {
-      case "today":
-        startDate = latestDate;
-        endDate = latestDate;
-        break;
-      case "yesterday":
-        startDate = new Date(latestDate);
-        startDate.setDate(startDate.getDate() - 1);
-        endDate = startDate;
-        break;
-      case "7D":
-        startDate = new Date(latestDate);
-        startDate.setDate(startDate.getDate() - 7);
-        endDate = latestDate;
-        break;
-      case "30D":
-        startDate = new Date(latestDate);
-        startDate.setDate(startDate.getDate() - 30);
-        endDate = latestDate;
-        break;
-      case "3M":
-        startDate = new Date(latestDate);
-        startDate.setMonth(startDate.getMonth() - 3);
-        endDate = latestDate;
-        break;
-      case "6M":
-        startDate = new Date(latestDate);
-        startDate.setMonth(startDate.getMonth() - 6);
-        endDate = latestDate;
-        break;
-      case "12M":
-        startDate = new Date(latestDate);
-        startDate.setFullYear(startDate.getFullYear() - 1);
-        endDate = latestDate;
-        break;
-      default:
-        throw new Error("Invalid period");
-    }
+    startDate = new Date(latestDate);
+    startDate.setDate(startDate.getDate() - (period - 1));
+    endDate = latestDate;
+
+    // switch (period) {
+    //   case "today":
+    //     startDate = latestDate;
+    //     endDate = latestDate;
+    //     break;
+    //   case "yesterday":
+    //     startDate = new Date(latestDate);
+    //     startDate.setDate(startDate.getDate() - (1 - 1));
+    //     endDate = startDate;
+    //     break;
+    //   case "7D":
+    //     startDate = new Date(latestDate);
+    //     startDate.setDate(startDate.getDate() - (7 - 1));
+    //     endDate = latestDate;
+    //     break;
+    //   case "30D":
+    //     startDate = new Date(latestDate);
+    //     startDate.setDate(startDate.getDate() - (30 - 1));
+    //     endDate = latestDate;
+    //     break;
+    //   case "3M":
+    //     startDate = new Date(latestDate);
+    //     startDate.setMonth(startDate.getMonth() - (3 - 1));
+    //     endDate = latestDate;
+    //     break;
+    //   case "6M":
+    //     startDate = new Date(latestDate);
+    //     startDate.setMonth(startDate.getMonth() - (6 - 1));
+    //     endDate = latestDate;
+    //     break;
+    //   case "12M":
+    //     startDate = new Date(latestDate);
+    //     startDate.setFullYear(startDate.getMonth() - (12 - 1));
+    //     endDate = latestDate;
+    //     break;
+    //   default:
+    //     throw new Error("Invalid period");
+    // }
 
     // Converte as datas para o formato 'yyyy/mm/dd'
     // startDate = formatDate(startDate);
@@ -192,21 +223,23 @@ const Chart: React.FC<ChartProps> = ({
 
   // Recebe os dados filtrados do charts_data.json e o converte para modelo que é usado no gráfico
   function transformData(data: any[]): any[] {
-    return data
-      .sort((a, b) => a - b)
-      .map((item) => ({
-        metric_display_name: graphicDatas.find(
-          (metrica) =>
-            metrica.metric_id ===
-            item.data.metadata["A: Transfer ERC-20"].metric_id
-        ).metric_display_name,
-        id: item.data.metadata["A: Transfer ERC-20"].contract_name,
-        color: `hsl(${Math.floor(Math.random() * 256)}, 70%, 50%)`,
-        data: Object.entries(item.data.series["A: Transfer ERC-20"]).map(
-          ([x, y]) => ({ x: formatDate(new Date(Number(x))), y: Number(y) })
-        ),
-        checked: true,
-      }));
+    return (
+      data
+        // .sort((a, b) => a.data.x - b.data.x)
+        .map((item) => ({
+          metric_display_name: graphicDatas.find(
+            (metrica) =>
+              metrica.metric_id ===
+              item.data.metadata["A: Transfer ERC-20"].metric_id
+          ).metric_display_name,
+          id: item.data.metadata["A: Transfer ERC-20"].contract_name,
+          color: `hsl(${Math.floor(Math.random() * 256)}, 70%, 50%)`,
+          data: Object.entries(item.data.series["A: Transfer ERC-20"]).map(
+            ([x, y]) => ({ x: formatDate(new Date(Number(x))), y: Number(y) })
+          ),
+          checked: true,
+        }))
+    );
   }
 
   function formatDate(date: Date): string {
@@ -221,22 +254,25 @@ const Chart: React.FC<ChartProps> = ({
   return (
     <>
       <div className="h-[calc(100vh-123px)] p-[24px] w-full flex flex-col">
-        <ButtonDatesFilter />
+        <ButtonDatesFilter onButtonClick={handleDaysFilterSelected} />
         <ChartLine
           titleChart={titleChart}
           descriptionChart={descriptionChart}
           convertedGraphicDatas={convertedGraphicDatas.filter((d) => d.checked)}
         />
 
-        <TableGraphic
-          convertedGraphicDatas={convertedGraphicDatas}
-          handleCheckboxChange={handleCheckboxChange}
-          handleCheckboxChangeAll={handleCheckboxChangeAll}
-          allItensChecked={allItensChecked}
-          hide={hide}
-          handleClick={handleClick}
-          qtColumns={qtColumns}
-        />
+        <div className="overflow-x-auto min-h-[200px]">
+          <TableGraphic
+            convertedGraphicDatas={convertedGraphicDatas}
+            handleCheckboxChange={handleCheckboxChange}
+            handleCheckboxChangeAll={handleCheckboxChangeAll}
+            allItensChecked={allItensChecked}
+            hide={hide}
+            handleClick={handleClick}
+            qtColumns={qtColumns}
+          />
+        </div>
+        <br/>
       </div>
     </>
   );
