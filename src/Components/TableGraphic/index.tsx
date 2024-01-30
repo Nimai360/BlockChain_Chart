@@ -152,6 +152,20 @@ const TableGraphic: React.FC<{
                       </Typography>
                     </th>
                   ))}
+                  {/* {Array.from({ length: qtColumns }).map((_, i) => {
+                    return (
+                      <th key={i} className={`min-w-[120px] pb-[10px] m-0 p-0 border-solid text-center border-neutral_300 border-t-[0px] border-b-[1px] border-l-[0px] border-r-[0px] bg-transparent px-[27px]`}>
+                        <Typography
+                          placeholder=""
+                          variant="small"
+                          color="blue-gray"
+                          className="m-0 p-0 font-inter text-[14px] leading-[20px] text-neutral_700 font-medium"
+                        >
+                          {row.data[i]?.y.toFixed(2) || ""}
+                        </Typography>
+                      </th>
+                    );
+                  })} */}
               </React.Fragment>
             ))}
           </tr>
