@@ -152,24 +152,24 @@ const TableGraphic: React.FC<{
                 Average
               </Typography>
             </th>
-            {TABLE_HEAD.map((head, index) => 
-            
-            (
-              <th
-                key={`${head}`}
-                className="min-w-[120px] pb-[10px] m-0 p-0 border-solid text-center border-neutral_300 border-t-[0px] border-b-[1px] border-l-[0px] border-r-[0px] bg-transparent px-[27px]"
-              >
-                <Typography
-                  placeholder=""
-                  variant="small"
-                  color="blue-gray"
-                  className="m-0 p-0 font-inter text-[14px] leading-[20px] text-neutral_700 font-medium"
-                >
-                  {/* {head} {i + 1} */}
-                  {formatDate(head)}
-                </Typography>
-              </th>
-            ))}
+            {TABLE_HEAD.map((head, index) => {
+              if (index < qtColumns)
+                return (
+                  <th
+                    key={`${head}`}
+                    className="min-w-[120px] pb-[10px] m-0 p-0 border-solid text-center border-neutral_300 border-t-[0px] border-b-[1px] border-l-[0px] border-r-[0px] bg-transparent px-[27px]"
+                  >
+                    <Typography
+                      placeholder=""
+                      variant="small"
+                      color="blue-gray"
+                      className="m-0 p-0 font-inter text-[14px] leading-[20px] text-neutral_700 font-medium"
+                    >
+                      {formatDate(head)}
+                    </Typography>
+                  </th>
+                );
+            })}
           </tr>
         </thead>
 
