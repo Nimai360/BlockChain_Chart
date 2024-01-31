@@ -34,16 +34,16 @@ const Metric_Options: React.FC<Metric_OptionsProps> = ({
           className="min-w-[40px] m-0 px-[10px] w-full gap-y-[10px]  text-neutral_900 font-inter font-normal"
         >
           <ListItem placeholder="" className="p-0">
-            <div className="m-[0.8px] flex h-[39px] w-full rounded-[6px] justify-between bg-neutral_100 border-solid border-[1px] border-neutral_400 text-[12px] items-center">
+            <div className="flex h-[39px] w-full rounded-[6px] justify-around bg-neutral_100 border-solid border-[1px] border-neutral_400 text-[12px] items-center">
               <input
                 type="text"
                 placeholder="Search..."
-                className="ml-[16px] p-0 text-[12px] bg-transparent font-inter focus:ring-0 flex-grow text-neutral_600"
+                className="p-0 text-[12px] bg-transparent font-inter focus:ring-0  text-neutral_600"
                 value={searchText}
                 onChange={handleInputChange}
               />
-              <div className="absolute right-[16px] p-0 size-[24px]">
-                {/* <img src={SearchIcon} alt="search icon" className="size-[24px] text-neutral_600" /> */}
+              <div className="right-[16px] min-w-[24px] p-0">
+                <img src={SearchIcon} alt="search icon" className="size-[24px] text-neutral_600" />
               </div>
             </div>
           </ListItem>
