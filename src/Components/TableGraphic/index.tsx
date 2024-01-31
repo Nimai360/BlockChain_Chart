@@ -10,8 +10,6 @@ interface ConvertedGraphicDatasItem {
   checked: boolean;
 }
 
-// const TABLE_HEAD = ["Average", "Jun"];
-
 const TableGraphic: React.FC<{
   convertedGraphicDatas: ConvertedGraphicDatasItem[];
   handleCheckboxChange: (row: ConvertedGraphicDatasItem) => void;
@@ -226,31 +224,11 @@ const TableGraphic: React.FC<{
                           (total, item) => total + item["y"],
                           0
                         );
-                        // const firstValues = row.data.slice(0, qtColumns);
-                        // const sum = firstValues.reduce(
-                        //   (acc: string, curr: { y: any }) =>
-                        //     acc + Number(curr.y),
-                        //   0
-                        // );
                         const average = sum / row.data.length;
                         return average.toFixed(2);
                       })()}
                     </Typography>
                   </td>
-                  {/* {convertedGraphicDatas.map((item, index) => {
-                    return (
-                      <td key={index} className={classes}>
-                        <Typography
-                          placeholder=""
-                          variant="small"
-                          color="blue-gray"
-                          className={classTypography}
-                        >
-                          {item.data[index]?.y || ""}
-                        </Typography>
-                      </td>
-                    );
-                  })} */}
                   {Array.from({ length: qtColumns }).map((_, i) => {
                     return (
                       <td key={i} className={`${classes}`}>

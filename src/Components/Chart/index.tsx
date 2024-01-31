@@ -174,50 +174,6 @@ const Chart: React.FC<ChartProps> = ({
     startDate = new Date(latestDate);
     startDate.setDate(startDate.getDate() - (period - 1));
     endDate = latestDate;
-
-    // switch (period) {
-    //   case "today":
-    //     startDate = latestDate;
-    //     endDate = latestDate;
-    //     break;
-    //   case "yesterday":
-    //     startDate = new Date(latestDate);
-    //     startDate.setDate(startDate.getDate() - (1 - 1));
-    //     endDate = startDate;
-    //     break;
-    //   case "7D":
-    //     startDate = new Date(latestDate);
-    //     startDate.setDate(startDate.getDate() - (7 - 1));
-    //     endDate = latestDate;
-    //     break;
-    //   case "30D":
-    //     startDate = new Date(latestDate);
-    //     startDate.setDate(startDate.getDate() - (30 - 1));
-    //     endDate = latestDate;
-    //     break;
-    //   case "3M":
-    //     startDate = new Date(latestDate);
-    //     startDate.setMonth(startDate.getMonth() - (3 - 1));
-    //     endDate = latestDate;
-    //     break;
-    //   case "6M":
-    //     startDate = new Date(latestDate);
-    //     startDate.setMonth(startDate.getMonth() - (6 - 1));
-    //     endDate = latestDate;
-    //     break;
-    //   case "12M":
-    //     startDate = new Date(latestDate);
-    //     startDate.setFullYear(startDate.getMonth() - (12 - 1));
-    //     endDate = latestDate;
-    //     break;
-    //   default:
-    //     throw new Error("Invalid period");
-    // }
-
-    // Converte as datas para o formato 'yyyy/mm/dd'
-    // startDate = formatDate(startDate);
-    // endDate = formatDate(endDate);
-
     return { startDate, endDate };
   }
 
