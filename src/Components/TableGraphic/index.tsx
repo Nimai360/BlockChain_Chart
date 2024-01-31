@@ -10,7 +10,7 @@ interface ConvertedGraphicDatasItem {
   checked: boolean;
 }
 
-const TABLE_HEAD = ["Average", "Jun"];
+// const TABLE_HEAD = ["Average", "Jun"];
 
 const TableGraphic: React.FC<{
   convertedGraphicDatas: ConvertedGraphicDatasItem[];
@@ -82,8 +82,29 @@ const TableGraphic: React.FC<{
       "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
     return hex;
   }
-  let maxArrayLength = Math.max(...convertedGraphicDatas.map(item => item.data.length));
+  let maxArrayLength = Math.max(
+    ...convertedGraphicDatas.map((item) => item.data.length)
+  );
   qtColumns = maxArrayLength;
+
+  const TABLE_HEAD = Array.from(
+    new Set(convertedGraphicDatas.flatMap((item) => item.data.map((d) => d.x)))
+  );
+
+  function formatDate(input: string) {
+    var parts = input.split("/");
+    var year = parseInt(parts[0]);
+    var month = parseInt(parts[1]) - 1; // Months are 0 based index
+    var day = parseInt(parts[2]);
+
+    var date = new Date(year, month, day);
+
+    const options: Intl.DateTimeFormatOptions = {
+      month: "short",
+      day: "numeric",
+    };
+    return date.toLocaleDateString("en-US", options);
+  }
 
   return (
     <>
@@ -121,52 +142,33 @@ const TableGraphic: React.FC<{
                 </div>
               </div>
             </th>
-            {TABLE_HEAD.map((head, index) => (
-              <React.Fragment key={head}>
-                {index === 0 && (
-                  <th className="min-w-[120px] pb-[10px] m-0 p-0 border-solid text-center border-neutral_300 border-t-[0px] border-b-[1px] border-l-[0px] border-r-[1px] bg-transparent px-[27px]">
-                    <Typography
-                      placeholder=""
-                      variant="small"
-                      color="blue-gray"
-                      className="m-0 p-0 font-inter text-[14px] leading-[20px] text-neutral_700 font-medium"
-                    >
-                      {head}
-                    </Typography>
-                  </th>
-                )}
-                {index !== 0 &&
-                  Array.from({ length: qtColumns }).map((_, i) => (
-                    
-                    <th
-                      key={`${head}-${i}`}
-                      className="min-w-[120px] pb-[10px] m-0 p-0 border-solid text-center border-neutral_300 border-t-[0px] border-b-[1px] border-l-[0px] border-r-[0px] bg-transparent px-[27px]"
-                    >
-                      <Typography
-                        placeholder=""
-                        variant="small"
-                        color="blue-gray"
-                        className="m-0 p-0 font-inter text-[14px] leading-[20px] text-neutral_700 font-medium"
-                      >
-                        {head} {i + 1}
-                      </Typography>
-                    </th>
-                  ))}
-                  {/* {Array.from({ length: qtColumns }).map((_, i) => {
-                    return (
-                      <th key={i} className={`min-w-[120px] pb-[10px] m-0 p-0 border-solid text-center border-neutral_300 border-t-[0px] border-b-[1px] border-l-[0px] border-r-[0px] bg-transparent px-[27px]`}>
-                        <Typography
-                          placeholder=""
-                          variant="small"
-                          color="blue-gray"
-                          className="m-0 p-0 font-inter text-[14px] leading-[20px] text-neutral_700 font-medium"
-                        >
-                          {row.data[i]?.y.toFixed(2) || ""}
-                        </Typography>
-                      </th>
-                    );
-                  })} */}
-              </React.Fragment>
+            <th className="min-w-[120px] pb-[10px] m-0 p-0 border-solid text-center border-neutral_300 border-t-[0px] border-b-[1px] border-l-[0px] border-r-[1px] bg-transparent px-[27px]">
+              <Typography
+                placeholder=""
+                variant="small"
+                color="blue-gray"
+                className="m-0 p-0 font-inter text-[14px] leading-[20px] text-neutral_700 font-medium"
+              >
+                Average
+              </Typography>
+            </th>
+            {TABLE_HEAD.map((head, index) => 
+            
+            (
+              <th
+                key={`${head}`}
+                className="min-w-[120px] pb-[10px] m-0 p-0 border-solid text-center border-neutral_300 border-t-[0px] border-b-[1px] border-l-[0px] border-r-[0px] bg-transparent px-[27px]"
+              >
+                <Typography
+                  placeholder=""
+                  variant="small"
+                  color="blue-gray"
+                  className="m-0 p-0 font-inter text-[14px] leading-[20px] text-neutral_700 font-medium"
+                >
+                  {/* {head} {i + 1} */}
+                  {formatDate(head)}
+                </Typography>
+              </th>
             ))}
           </tr>
         </thead>
