@@ -152,9 +152,6 @@ const Chart: React.FC<ChartProps> = ({
       const itemDate = new Date(item.x);
       const formattedItemDate = itemDate;
       
-      // console.log('formattedItemDate', formattedItemDate)
-      // console.log('formattedItemDateaprovado?', formattedItemDate >= startDate &&
-      // formattedItemDate <= endDate)
       return (
         formattedItemDate >= startDate &&
         formattedItemDate <= endDate
