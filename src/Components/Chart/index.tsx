@@ -45,8 +45,6 @@ const Chart: React.FC<ChartProps> = ({
   const [allItensChecked, setAllItensChecked] = useState<boolean>(false);
   const [daysFilter, setDaysFilter] = useState<number>(7);
 
-  // useEffect(() => {}, [daysFilter]);
-
   useEffect(() => {
     if (
       !graphicDatas ||
@@ -59,6 +57,7 @@ const Chart: React.FC<ChartProps> = ({
     const charts_data = findGraphicDatasInCharts_data(graphicDatas);
     const transformedData = transformData(charts_data);
     const filteredData = transformedData.map((item) => {
+      // console.log('filterByDate', filterByDate(item, daysFilter))
       return {
         ...item,
         data: filterByDate(item, daysFilter),
@@ -134,7 +133,7 @@ const Chart: React.FC<ChartProps> = ({
     new_data = new_data.sort((a: any, b: any) => {
       let dateA: any = new Date(a.x);
       let dateB: any = new Date(b.x);
-      return dateB - dateA;
+      return dateB + dateA;
     });
     return new_data;
   }
@@ -145,18 +144,20 @@ const Chart: React.FC<ChartProps> = ({
     }
     // Já possui as informações ordenadas por data decrescente
     let new_data = sortDateMetricsData(data);
-
-    // new_data.map(item => null)
-    const latestDate = new Date(new_data[0].x);
-    const { startDate, endDate } = getStartAndEndDates(period, latestDate);
-
+    
+    const latestDate = new Date(new_data[new_data.length-1].x);
+    const { startDate, endDate } = getStartAndEndDates(period, latestDate);    
+    
     return new_data.filter((item: { x: string | number | Date }) => {
       const itemDate = new Date(item.x);
-      const formattedItemDate = formatDate(itemDate);
-
+      const formattedItemDate = itemDate;
+      
+      // console.log('formattedItemDate', formattedItemDate)
+      // console.log('formattedItemDateaprovado?', formattedItemDate >= startDate &&
+      // formattedItemDate <= endDate)
       return (
-        new Date(formattedItemDate) >= startDate &&
-        new Date(formattedItemDate) <= endDate
+        formattedItemDate >= startDate &&
+        formattedItemDate <= endDate
       );
     });
   }
